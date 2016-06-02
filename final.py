@@ -5,5 +5,9 @@ import seaborn
 seaborn.set()
 from numpy import genfromtxt
 
+def get_data(filename):
 
-data = genfromtxt('result.csv', delimiter=',')
+    return genfromtxt(filename, delimiter=',')
+
+
+data = get_data('result.csv')
