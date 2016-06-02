@@ -6,8 +6,12 @@ seaborn.set()
 from numpy import genfromtxt
 
 def get_data(filename):
+    data = genfromtxt(filename, delimiter=',')
+    data = [data[x] for x in range(1, data.shape[0])]
+    data = np.asarray(data)
+    return data
 
-    return genfromtxt(filename, delimiter=',')
+
 
 def get_gr():
     gr = []
@@ -18,10 +22,10 @@ def get_gr():
         gr.append(color)
     return gr
 
+
+
 def get_id():
-    id = []
-    for star in data[1:]:
-        id.append(star[0])
+    id = [data[x][0] for x in range(1, data.shape[0])]
     return id
 
 ##########################################################################################
