@@ -11,3 +11,5 @@ def get_data(filename):
 
 
 data = get_data('result.csv')
+print (data.shape)
+print (data)
