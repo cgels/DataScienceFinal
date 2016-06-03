@@ -77,6 +77,12 @@ def get_diff_mean_Hyades_RA(ra, dec, epsilon=20):
     return mask
 
 
+def get_Hyades_mean_parallax(plx, epsilon=20):
+    mean_plx = 22.0
+    mean_dif_sqr = (plx * 1000) - mean_plx
+    return mean_dif_sqr <= epsilon
+
+
 ## returns distance in parsec based on parallx angle
 def get_dist(parallax):
     # constant in terms of astronmical units / parallax -> f
@@ -96,6 +102,18 @@ def plot_hr_hyades(bv, lum):
     plt.xlabel("Color Index: B-V (mag)")
     plt.show()
 
+def plot_hr_hyades_plx(bv, lum):
+    plt.scatter(bv, lum, s=15, c='blue', marker='*', alpha=.7)
+    plt.ylabel("Solar Luminosity (L☉)")
+    plt.xlabel("Color Index: B-V (mag)")
+    plt.show()
+
+def plot_hr_hyades_plx_AND_ra_dec(bv, lum):
+    plt.scatter(bv, lum, s=15, c='blue', marker='*', alpha=.7)
+    plt.ylabel("Solar Luminosity (L☉)")
+    plt.xlabel("Color Index: B-V (mag)")
+    plt.show()
+
 
 
 def plot_dist(ra, dec):
@@ -108,7 +126,6 @@ def plot_dist(ra, dec):
 
 def get_RA():
     return data[:, 2]
-
 
 
 def get_DEC():
@@ -212,15 +229,18 @@ parallax = get_parallax()
 
 dist = get_dist(parallax)
 
-hyades_mask = get_diff_mean_Hyades_RA(get_RA(), get_dec(), 1)
-
-# print(dist)
-plot_hr(bv, lum, dist)
+hyades_mask = get_diff_mean_Hyades_RA(get_RA(), get_dec(), 2.5)
+hyades_mask_plx = get_Hyades_mean_parallax(parallax, .1)
 #
 # plot_dist(ra, dec)
 #plot_hr(bv, lum, dist)
-
+print("Hyades By RA, DEC - # Data Points: {}".format(np.sum(hyades_mask) / bv.size))
 plot_hr_hyades(bv[hyades_mask], lum[hyades_mask])
+print("Hyades By Parallax - # Data Points: {}".format(np.sum(hyades_mask_plx) / bv.size))
+plot_hr_hyades_plx(bv[hyades_mask_plx], lum[hyades_mask_plx])
+print("Hyades By RA, DEC && Parallax - # Data Points: {}".format(np.sum(np.logical_and(hyades_mask_plx, hyades_mask)) / bv.size))
+plot_hr_hyades_plx_AND_ra_dec(bv[np.logical_and(hyades_mask_plx, hyades_mask)], lum[np.logical_and(hyades_mask_plx, hyades_mask)])
+
 
 
 plot_hr(bv, lum, dist)
