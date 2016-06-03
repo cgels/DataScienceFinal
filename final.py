@@ -11,7 +11,6 @@ from numpy import genfromtxt
 
 def get_data(filename):
     data = genfromtxt(filename, delimiter=',')
-    #data = np.array(data)
     data = [data[x] for x in range(1, data.shape[0])]
     data = np.asarray(data)
     return data
