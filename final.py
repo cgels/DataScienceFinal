@@ -158,9 +158,9 @@ def plot_2Dclusters(clusters, x, y):
     cluster1 = clusters == 1
     cluster2 = clusters == 2
 
-    plt.scatter(x[cluster0], y[cluster0], marker='D', c='blue')
-    plt.scatter(x[cluster1], y[cluster1], marker='o', c='green')
-    plt.scatter(x[cluster2], y[cluster2], marker='^', c='magenta')
+    plt.scatter(x[cluster0], y[cluster0], marker='*', c='lightblue')
+    plt.scatter(x[cluster1], y[cluster1], marker='*', c='blue')
+    plt.scatter(x[cluster2], y[cluster2], marker='*', c='magenta')
     plt.xlabel("Right Ascension")
     plt.ylabel("Declination")
     plt.show()
@@ -175,9 +175,9 @@ def plot3D(x, y, z, clusters):
     cluster1 = clusters == 1
     cluster2 = clusters == 2
 
-    ax.scatter(x[cluster0], y[cluster0], z[cluster0], marker='D', c='blue')
-    ax.scatter(x[cluster1], y[cluster1], z[cluster1], marker='o', c='green')
-    ax.scatter(x[cluster2], y[cluster2], z[cluster2], marker='^', c='magenta')
+    ax.scatter(x[cluster0], y[cluster0], z[cluster0], marker='D', c='lightblue', alpha=0.5)
+    ax.scatter(x[cluster1], y[cluster1], z[cluster1], marker='o', c='green', alpha=0.7)
+    ax.scatter(x[cluster2], y[cluster2], z[cluster2], marker='^', c='magenta', alpha=0.7)
     ax.set_ylabel("Distance")
     ax.set_xlabel("Declination")
     ax.set_zlabel("Right Ascension")
@@ -215,18 +215,14 @@ dist = get_dist(parallax)
 hyades_mask = get_diff_mean_Hyades_RA(get_RA(), get_dec(), 1)
 
 # print(dist)
-plot_hr(bv, lum, dist)
-#
+
 # plot_dist(ra, dec)
-#plot_hr(bv, lum, dist)
+plot_hr(bv, lum, dist)
 
 plot_hr_hyades(bv[hyades_mask], lum[hyades_mask])
-
-
-plot_hr(bv, lum, dist)
 #
 # plot_dist(ra, dec)
 distClusters = dist_kmeans(ra, dec)
 # print(distClusters)
-# plot_2Dclusters(distClusters, ra, dec)
-plot3D(dec, dist, ra, distClusters)
+plot_2Dclusters(hyades_mask, bv, lum)
+plot3D(dec, dist, ra, hyades_mask)
