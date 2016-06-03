@@ -29,30 +29,31 @@ def get_temp(color_index):
     return 9000.0 / (color_index + 0.93)
 
 
-def get_parallax():
-    ## returns data for parallax - converting milliarcseconds to arcesonds
-    return np.asarray(data[:,4]) / 1000
-
-
 def get_id():
-    # id = [data[x][0] for x in range(0, data.shape[0])]
-    # id = np.array(data[:,0], dtype='int_')
     return np.array(data[:,0], dtype='int_')
-
 
 def get_VMag():
     return np.array(data[:,1])
 
-def get_RA():
+def get_ra():
     return np.asarray(data[:,2])
 
 def get_dec():
     return np.asarray(data[:,3])
 
+def get_parallax():
+    ## returns data for parallax - converting milliarcseconds to arcesonds
+    return np.asarray(data[:,4]) / 1000
+
+def get_pmRA():
+    return np.asarray(data[:,6])
+
+def get_pmDec():
+    return np.asarray(data[:,7])
+
 #L=(15 - Vmag - 5logPlx)/2.5
 # Calculate the luminosity here
 # NOTE: Solar Luminosity is equivalent to Absolute Magnitude.
-
 def get_lum():
     Vmag = get_VMag()
 
@@ -77,6 +78,15 @@ def get_diff_mean_Hyades_RA(ra, dec, epsilon=20):
     return mask
 
 
+def get_Hyades_mean_parallax(plx, epsilon=20):
+    mean_plx = 22.0
+    mean_dif_sqr = (plx * 1000) - mean_plx
+    return mean_dif_sqr <= epsilon
+
+def get_Hyades_proper_motion():
+    propMot = get_pmRA() + get_pmDec()
+    return propMot
+
 ## returns distance in parsec based on parallx angle
 def get_dist(parallax):
     # constant in terms of astronmical units / parallax -> f
@@ -96,6 +106,18 @@ def plot_hr_hyades(bv, lum):
     plt.xlabel("Color Index: B-V (mag)")
     plt.show()
 
+def plot_hr_hyades_plx(bv, lum):
+    plt.scatter(bv, lum, s=15, c='blue', marker='*', alpha=.7)
+    plt.ylabel("Solar Luminosity (L☉)")
+    plt.xlabel("Color Index: B-V (mag)")
+    plt.show()
+
+def plot_hr_hyades_plx_AND_ra_dec(bv, lum):
+    plt.scatter(bv, lum, s=15, c='blue', marker='*', alpha=.7)
+    plt.ylabel("Solar Luminosity (L☉)")
+    plt.xlabel("Color Index: B-V (mag)")
+    plt.show()
+
 
 
 def plot_dist(ra, dec):
@@ -105,14 +127,6 @@ def plot_dist(ra, dec):
     plt.show()
 
 
-
-def get_RA():
-    return data[:, 2]
-
-
-
-def get_DEC():
-    return data[:, 3]
 
 
 def lum_kmeans(bv, lum):
@@ -201,9 +215,9 @@ id = get_id()
 lum = get_lum()
 # print (lum)
 
-ra = get_RA()
+ra = get_ra()
 
-dec = get_DEC()
+dec = get_dec()
 
 temp = get_temp(bv)
 
@@ -212,15 +226,20 @@ parallax = get_parallax()
 
 dist = get_dist(parallax)
 
-hyades_mask = get_diff_mean_Hyades_RA(get_RA(), get_dec(), 1)
+hyades_pm = get_Hyades_proper_motion()
 
-# print(dist)
-plot_hr(bv, lum, dist)
+hyades_mask = get_diff_mean_Hyades_RA(get_ra(), get_dec(), 1)
+hyades_mask_plx = get_Hyades_mean_parallax(parallax, .01)
 #
 # plot_dist(ra, dec)
 #plot_hr(bv, lum, dist)
-
+print("Hyades By RA, DEC - # Data Points: {}".format(np.sum(hyades_mask)))
 plot_hr_hyades(bv[hyades_mask], lum[hyades_mask])
+print("Hyades By Parallax - # Data Points: {} ".format(np.sum(hyades_mask_plx)))
+plot_hr_hyades_plx(bv[hyades_mask_plx], lum[hyades_mask_plx])
+print("Hyades By RA, DEC && Parallax - # Data Points: {}".format(np.sum(np.logical_and(hyades_mask_plx, hyades_mask))))
+plot_hr_hyades_plx_AND_ra_dec(bv[np.logical_and(hyades_mask_plx, hyades_mask)], lum[np.logical_and(hyades_mask_plx, hyades_mask)])
+
 
 
 plot_hr(bv, lum, dist)
