@@ -1,6 +1,7 @@
 import numpy as np
-import sklearn
+import sklearn as skl
 from sklearn.cluster import KMeans
+from sklearn import neighbors
 import matplotlib
 import matplotlib.pyplot as plt
 import seaborn
@@ -67,6 +68,7 @@ def get_dist(parallax):
     print(parallax.size)
     return 206265.0 / parallax
 
+
 def plot_hr(bv, lum, dist):
     lum = np.log10(lum)
     # sizes =  (dist + 2 * np.amin(dist)) / np.mean(dist)
@@ -75,7 +77,6 @@ def plot_hr(bv, lum, dist):
     plt.ylabel("Luminosity (L☉)")
     plt.xlabel("B-V (mag)")
     plt.show()
-
 
 
 def kmeans(bv, lum):
@@ -94,6 +95,7 @@ def kmeans(bv, lum):
     clusters = clustering.predict(plot)
     print(clusters)
     return clusters
+
 
 
 ##########################################################################################
@@ -120,7 +122,7 @@ parallax = get_parallax()
 
 dist = get_dist(parallax)
 # print(dist)
-plot_hr(bv, lum, dist)
+#plot_hr(bv, lum, dist)
 
 
-# kmeans(temp, lum)
+kmeans(temp, lum)
