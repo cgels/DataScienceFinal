@@ -94,8 +94,23 @@ def get_dist(parallax):
     return 206265.0 / parallax
 
 
-def plot_hr(bv, lum, dist):
-    plt.scatter(bv, lum, s=15, c='blue', marker='*', alpha=.7)
+def plot_hr(bv, lum):
+
+    clusters = spectral_knn(bv)
+
+    B = clusters == 0
+    A = clusters == 1
+    F = clusters == 2
+    G = clusters == 3
+    K = clusters == 4
+    M = clusters == 5
+
+    plt.scatter(bv[B], lum[B], marker='D', c='lightblue')
+    plt.scatter(bv[A], lum[A], marker='D', c='white')
+    plt.scatter(bv[F], lum[F], marker='D', c='lightyellow')
+    plt.scatter(bv[G], lum[G], marker='D', c='yellow')
+    plt.scatter(bv[K], lum[K], marker='D', c='orange')
+    plt.scatter(bv[M], lum[M], marker='D', c='red')
     plt.ylabel("Solar Luminosity (L☉)")
     plt.xlabel("Color Index: B-V (mag)")
     plt.show()
@@ -126,6 +141,30 @@ def plot_dist(ra, dec):
     plt.xlabel("Right ascension")
     plt.show()
 
+
+
+
+def spectral_knn(bv):
+
+    mask = []
+    for point in bv:
+        if(point <= -0.04):
+            print(point)
+            mask.append(0)
+        elif(point > -0.04 and point <= 0.3):
+            mask.append(1)
+        elif (point > 0.3 and point <= 0.53):
+            mask.append(2)
+        elif (point > 0.53 and point <= 0.74):
+            mask.append(3)
+        elif (point > 0.74 and point <= 1.33):
+            mask.append(4)
+        elif (point > 1.33):
+            mask.append(5)
+
+    mask = np.array(mask)
+
+    return mask
 
 
 
@@ -222,11 +261,12 @@ dec = get_dec()
 temp = get_temp(bv)
 
 parallax = get_parallax()
-# print(parallax)
 
 dist = get_dist(parallax)
 
 hyades_pm = get_Hyades_proper_motion()
+
+plot_hr(bv, lum)
 
 hyades_mask = get_diff_mean_Hyades_RA(get_ra(), get_dec(), 1)
 hyades_mask_plx = get_Hyades_mean_parallax(parallax, .01)
@@ -241,10 +281,6 @@ print("Hyades By RA, DEC && Parallax - # Data Points: {}".format(np.sum(np.logic
 plot_hr_hyades_plx_AND_ra_dec(bv[np.logical_and(hyades_mask_plx, hyades_mask)], lum[np.logical_and(hyades_mask_plx, hyades_mask)])
 
 
-
-plot_hr(bv, lum, dist)
-#
-# plot_dist(ra, dec)
 distClusters = dist_kmeans(ra, dec)
 # print(distClusters)
 # plot_2Dclusters(distClusters, ra, dec)
