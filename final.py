@@ -223,6 +223,9 @@ plot_hr(bv, lum, dist)
 plot_hr_hyades(bv[hyades_mask], lum[hyades_mask])
 
 
+plot_hr(bv, lum, dist)
+#
+# plot_dist(ra, dec)
 distClusters = dist_kmeans(ra, dec)
 # print(distClusters)
 # plot_2Dclusters(distClusters, ra, dec)
