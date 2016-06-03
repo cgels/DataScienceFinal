@@ -97,21 +97,30 @@ def plot_hr_hyades(bv, lum):
 
 
 
-def kmeans(bv, lum):
-    # list of stars'(bv, lum) values
+def get_RA():
+    return data[:, 2]
+
+
+
+def get_DEC():
+    return data[:, 3]
+
+
+
+def dist_kmeans(ra, dec):
+    # list of stars'[bv, lum] values
     plot = []
 
     for s in range(data.shape[0]):
-        plot.append((bv[s], lum[s]))
+        plot.append(np.array([ra[s], dec[s]]))
 
     plot = np.array(plot)
-    print(plot)
 
     # literally just took from notebook example, will mess around w params of KMeans later?
     clustering = KMeans(n_clusters=2, init='random', n_init=5)
     clustering.fit(plot)
     clusters = clustering.predict(plot)
-    print(clusters)
+
     return clusters
 
 
@@ -132,6 +141,10 @@ id = get_id()
 lum = get_lum()
 # print (lum)
 
+ra = get_RA()
+
+dec = get_DEC()
+
 temp = get_temp(bv)
 
 parallax = get_parallax()
@@ -142,9 +155,10 @@ dist = get_dist(parallax)
 hyades_mask = get_diff_mean_Hyades_RA(get_RA(), get_dec(), 1)
 
 # print(dist)
-plot_hr(bv, lum, dist)
+#plot_hr(bv, lum, dist)
 
 plot_hr_hyades(bv[hyades_mask], lum[hyades_mask])
 
 
-# kmeans(temp, lum)
+distClusters = dist_kmeans(ra, dec)
+print(distClusters)
