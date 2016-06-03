@@ -18,22 +18,30 @@ def get_data(filename):
 
 
 def get_bv():
+    # bv = [data[x][8] for x in range(0, data.shape[0])]
+    # bv = np.array(bv)
+    return data[:,8]
 
-    bv = [data[x][8] for x in range(0, data.shape[0])]
-    bv = np.array(bv)
-    return bv
+def get_temp(color_index):
+    # 9000 Kelvin / (B-V + .93)
+    return 9000.0 / (color_index + 0.93)
 
+
+def get_parallax():
+    ## returns data for parallax - converting milliarcseconds to arcesonds
+    return np.asarray(data[:,4]) / 1000
 
 
 def get_id():
-    id = [data[x][0] for x in range(0, data.shape[0])]
-    id = np.array(id,dtype='int_')
-    return id
+    # id = [data[x][0] for x in range(0, data.shape[0])]
+    # id = np.array(data[:,0], dtype='int_')
+    return np.array(data[:,0], dtype='int_')
 
 
 
 #L=(15 - Vmag - 5logPlx)/2.5
 # Calculate the luminosity here
+# NOTE: Luminosity is equivalent to Absolute Magnitude.
 
 def get_lum():
 
@@ -53,11 +61,17 @@ def get_lum():
     return 10**lum
 
 
+## returns distance in parsec based on parallx angle
+def get_dist(parallax):
+    # constant in terms of astronmical units / parallax -> f
+    print(parallax.size)
+    return 206265.0 / parallax
 
-
-def plot_hr(bv, lum):
+def plot_hr(bv, lum, dist):
     lum = np.log10(lum)
-    plt.scatter(bv, lum, s=20, c='blue', marker='*')
+    # sizes =  (dist + 2 * np.amin(dist)) / np.mean(dist)
+    # print(sizes)
+    plt.scatter(bv, lum, s=15, c='blue', marker='*', alpha=.7)
     plt.ylabel("Luminosity (L☉)")
     plt.xlabel("B-V (mag)")
     plt.show()
@@ -91,14 +105,22 @@ assert (data[0] == np.array([2,9.27,0.003797,-19.498837,21.9,181.21,-0.93,3.1,0.
 assert (data[-1] == np.array([118311,11.85,359.954685,-38.252603,24.63,337.76,-112.81,2.96,1.391])).sum() == 9
 
 bv = get_bv()
-print (bv)
+# print (bv)
 
 id = get_id()
-print (id)
+# print (id)
 
 lum = get_lum()
-print (lum)
+# print (lum)
 
-#plot_hr(bv, lum)
+temp = get_temp(bv)
 
-kmeans(bv, lum)
+parallax = get_parallax()
+# print(parallax)
+
+dist = get_dist(parallax)
+# print(dist)
+plot_hr(bv, lum, dist)
+
+
+# kmeans(temp, lum)
