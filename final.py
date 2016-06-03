@@ -22,6 +22,7 @@ def get_bv():
     # bv = np.array(bv)
     return data[:,8]
 
+
 def get_temp(color_index):
     # 9000 Kelvin / (B-V + .93)
     return 9000.0 / (color_index + 0.93)
@@ -38,27 +39,41 @@ def get_id():
     return np.array(data[:,0], dtype='int_')
 
 
+def get_VMag():
+    return np.array(data[:,1])
+
+def get_RA():
+    return np.asarray(data[:,2])
+
+def get_dec():
+    return np.asarray(data[:,3])
 
 #L=(15 - Vmag - 5logPlx)/2.5
 # Calculate the luminosity here
-# NOTE: Luminosity is equivalent to Absolute Magnitude.
+# NOTE: Solar Luminosity is equivalent to Absolute Magnitude.
 
 def get_lum():
+    Vmag = get_VMag()
 
-    Vmag = [data[x][1] for x in range(0, data.shape[0])]
-    Vmag = np.array(Vmag)
+    plx = get_parallax() * 1000
+    plx = 5 * np.log10(plx)
 
-    plx = [data[x][4] for x in range(0, data.shape[0])]
-    plx = np.array(plx)
+    lum = (15.0 - Vmag - plx) / 2.5
+    return np.asarray(lum)
 
-    plx = np.log10(plx)
-    plx = plx * 5
+## returns boolean mask for selecting features in dataset within an epsilon of the mean RA, Dec for the Hyades cluster
+def get_diff_mean_Hyades_RA(ra, dec, epsilon=20):
+    ## Hyades cluster is centered around a right ascension of 67 degrees
+    print(ra)
+    print(dec)
+    ra_diff = ra - 67
+    dec_diff = dec - 16
 
-    lum = 15 - Vmag - plx
-    lum = lum/2.5
-    lum = np.array(lum)
+    ra_diff_within = ra_diff <= epsilon
+    dec_diff_within = dec_diff <= epsilon
 
-    return 10**lum
+    mask = np.logical_and(ra_diff_within, dec_diff_within)
+    return mask
 
 
 ## returns distance in parsec based on parallx angle
@@ -67,13 +82,17 @@ def get_dist(parallax):
     print(parallax.size)
     return 206265.0 / parallax
 
+
 def plot_hr(bv, lum, dist):
-    lum = np.log10(lum)
-    # sizes =  (dist + 2 * np.amin(dist)) / np.mean(dist)
-    # print(sizes)
     plt.scatter(bv, lum, s=15, c='blue', marker='*', alpha=.7)
-    plt.ylabel("Luminosity (L☉)")
-    plt.xlabel("B-V (mag)")
+    plt.ylabel("Solar Luminosity (L☉)")
+    plt.xlabel("Color Index: B-V (mag)")
+    plt.show()
+
+def plot_hr_hyades(bv, lum):
+    plt.scatter(bv, lum, s=15, c='blue', marker='*', alpha=.7)
+    plt.ylabel("Solar Luminosity (L☉)")
+    plt.xlabel("Color Index: B-V (mag)")
     plt.show()
 
 
@@ -89,7 +108,7 @@ def kmeans(bv, lum):
     print(plot)
 
     # literally just took from notebook example, will mess around w params of KMeans later?
-    clustering = KMeans(n_clusters=3, init='random', n_init=5)
+    clustering = KMeans(n_clusters=2, init='random', n_init=5)
     clustering.fit(plot)
     clusters = clustering.predict(plot)
     print(clusters)
@@ -119,8 +138,13 @@ parallax = get_parallax()
 # print(parallax)
 
 dist = get_dist(parallax)
+
+hyades_mask = get_diff_mean_Hyades_RA(get_RA(), get_dec(), 1)
+
 # print(dist)
 plot_hr(bv, lum, dist)
+
+plot_hr_hyades(bv[hyades_mask], lum[hyades_mask])
 
 
 # kmeans(temp, lum)
