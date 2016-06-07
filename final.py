@@ -18,15 +18,31 @@ def get_data(filename):
 
 
 def get_hyades():
-    file = open("HyadesCluster.csv", "r")
     hyades = []
+    hyadesCluster = {}
+
+    file = open("HyadesCluster.csv", "r")
     for line in file:
         newLine = line.replace("\n", "")
-        hyades.append(newLine.replace("?", "-1").split(","))
+        star = newLine.replace("?", "-1").split(",")
+        hyades.append(star)
 
-    hyades = np.array(hyades, dtype='int')
-    return hyades
+        if star[0] not in hyadesCluster.keys():
+            hyadesCluster[int(star[0])] = int(star[1])
 
+    return hyadesCluster
+
+
+
+def hyades_vector():
+    hyadesCluster = []
+    for x in range(data.shape[0]):
+        if data[x][0] in hyades.keys():
+            hyadesCluster.append(hyades[data[x][0]])
+        else:
+            hyadesCluster.append(0)
+
+    return np.array(hyadesCluster)
 
 
 def get_bv():
@@ -277,7 +293,7 @@ assert (data[0] == np.array([2,9.27,0.003797,-19.498837,21.9,181.21,-0.93,3.1,0.
 assert (data[-1] == np.array([118311,11.85,359.954685,-38.252603,24.63,337.76,-112.81,2.96,1.391])).sum() == 9
 
 hyades = get_hyades()
-assert (hyades[0] == np.array([10540, 0])).sum() == 2
+hyadesVector = hyades_vector()
 
 bv = get_bv()
 # print (bv)
