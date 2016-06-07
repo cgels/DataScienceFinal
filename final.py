@@ -17,6 +17,17 @@ def get_data(filename):
     return data
 
 
+def get_hyades():
+    file = open("HyadesCluster.csv", "r")
+    hyades = []
+    for line in file:
+        newLine = line.replace("\n", "")
+        hyades.append(newLine.replace("?", "-1").split(","))
+
+    hyades = np.array(hyades, dtype='int')
+    return hyades
+
+
 
 def get_bv():
     # bv = [data[x][8] for x in range(0, data.shape[0])]
@@ -265,6 +276,9 @@ print (data.shape)
 assert (data[0] == np.array([2,9.27,0.003797,-19.498837,21.9,181.21,-0.93,3.1,0.999])).sum() == 9
 assert (data[-1] == np.array([118311,11.85,359.954685,-38.252603,24.63,337.76,-112.81,2.96,1.391])).sum() == 9
 
+hyades = get_hyades()
+assert (hyades[0] == np.array([10540, 0])).sum() == 2
+
 bv = get_bv()
 # print (bv)
 
@@ -304,4 +318,4 @@ print("Hyades By RA, DEC && Parallax - # Data Points: {}".format(np.sum(np.logic
 distClusters = dist_kmeans(ra, dec)
 # print(distClusters)
 # plot_2Dclusters(distClusters, ra, dec)
-# plot3D(dec, dist, ra, distClusters)
+plot3D(dec, dist, ra, distClusters)
