@@ -253,7 +253,7 @@ def dist_kmeans(ra, dec):
 
 
 
-def plot_2Dclusters(clusters, x, y):
+def plot_2Dclusters(clusters, x, y, title):
     cluster0 = clusters == 0
     cluster1 = clusters == 1
     cluster2 = clusters == 2
@@ -261,6 +261,7 @@ def plot_2Dclusters(clusters, x, y):
     plt.scatter(x[cluster0], y[cluster0], marker='*', c='lightblue')
     plt.scatter(x[cluster1], y[cluster1], marker='*', c='blue')
     plt.scatter(x[cluster2], y[cluster2], marker='*', c='magenta')
+    plt.title(title)
     plt.xlabel("Right Ascension")
     plt.ylabel("Declination")
     plt.show()
@@ -316,23 +317,25 @@ dist = get_dist(parallax)
 
 hyades_pm = get_Hyades_proper_motion()
 
-# plot_hr(bv, lum)
-
 hyades_mask = get_diff_mean_Hyades_RA(get_ra(), get_dec(), 1)
 
 hyades_mask_plx = get_Hyades_mean_parallax(parallax, .01)
 #
 # plot_dist(ra, dec)
-#plot_hr(bv, lum, dist)
+# plot_hr(bv, lum)
+plot_2Dclusters(hyadesVector, bv, lum, "Ground Truth Hyades")
 print("Hyades By RA, DEC - # Data Points: {}".format(np.sum(hyades_mask)))
 print("Hyades By RA, DEC Accuracy: {}".format(np.sum(np.logical_and(hyades_mask, hyadesVector))/np.sum(hyadesVector)))
 # plot_hr_hyades(bv[hyades_mask], lum[hyades_mask])
+plot_2Dclusters(hyades_mask, bv, lum, "Hyades Clustered by RA and DEC")
 print("Hyades By Parallax - # Data Points: {} ".format(np.sum(hyades_mask_plx)))
 print("Hyades By Parallax Accuracy: {}".format(np.sum(np.logical_and(hyades_mask_plx, hyadesVector))/np.sum(hyadesVector)))
 # plot_hr_hyades_plx(bv[hyades_mask_plx], lum[hyades_mask_plx])
+plot_2Dclusters(hyades_mask_plx, bv, lum, "Hyades Clustered by Parallax")
 print("Hyades By RA, DEC && Parallax - # Data Points: {}".format(np.sum(np.logical_and(hyades_mask_plx, hyades_mask))))
 print("Hyades By RA, DEC && Parallax Accuracy: {}".format(np.sum(np.logical_and(np.logical_and(hyades_mask_plx, hyades_mask), hyadesVector))/np.sum(hyadesVector)))
 # plot_hr_hyades_plx_AND_ra_dec(bv[np.logical_and(hyades_mask_plx, hyades_mask)], lum[np.logical_and(hyades_mask_plx, hyades_mask)])
+plot_2Dclusters(np.logical_and(hyades_mask_plx, hyades_mask), bv, lum, "Hyades Clustered by RA, DEC, and Parallax")
 
 distClusters = dist_kmeans(ra, dec)
 # print(distClusters)
