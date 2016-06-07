@@ -96,8 +96,8 @@ def get_lum():
 ## returns boolean mask for selecting features in dataset within an epsilon of the mean RA, Dec for the Hyades cluster
 def get_diff_mean_Hyades_RA(ra, dec, epsilon=20):
     ## Hyades cluster is centered around a right ascension of 67 degrees
-    print(ra)
-    print(dec)
+    # print(ra)
+    # print(dec)
     ra_diff = ra - 67
     dec_diff = dec - 16
 
@@ -125,7 +125,7 @@ def get_Hyades_proper_motion():
 ## returns distance in parsec based on parallx angle
 def get_dist(parallax):
     # constant in terms of astronmical units / parallax -> f
-    print(parallax.size)
+    # print(parallax.size)
     return 206265.0 / parallax
 
 
@@ -288,12 +288,12 @@ def plot3D(x, y, z, clusters):
 #Call functions here
 
 data = get_data('HIPPARCOS.csv')
-print (data.shape)
+# print (data.shape)
 assert (data[0] == np.array([2,9.27,0.003797,-19.498837,21.9,181.21,-0.93,3.1,0.999])).sum() == 9
 assert (data[-1] == np.array([118311,11.85,359.954685,-38.252603,24.63,337.76,-112.81,2.96,1.391])).sum() == 9
 
 hyades = get_hyades()
-hyadesVector = hyades_vector()
+hyadesVector = hyades_vector() == 1
 
 bv = get_bv()
 # print (bv)
@@ -316,22 +316,25 @@ dist = get_dist(parallax)
 
 hyades_pm = get_Hyades_proper_motion()
 
-plot_hr(bv, lum)
+# plot_hr(bv, lum)
 
 hyades_mask = get_diff_mean_Hyades_RA(get_ra(), get_dec(), 1)
+
 hyades_mask_plx = get_Hyades_mean_parallax(parallax, .01)
 #
 # plot_dist(ra, dec)
 #plot_hr(bv, lum, dist)
 print("Hyades By RA, DEC - # Data Points: {}".format(np.sum(hyades_mask)))
+print("Hyades By RA, DEC Accuracy: {}".format(np.sum(np.logical_and(hyades_mask, hyadesVector))/np.sum(hyadesVector)))
 # plot_hr_hyades(bv[hyades_mask], lum[hyades_mask])
 print("Hyades By Parallax - # Data Points: {} ".format(np.sum(hyades_mask_plx)))
+print("Hyades By Parallax Accuracy: {}".format(np.sum(np.logical_and(hyades_mask_plx, hyadesVector))/np.sum(hyadesVector)))
 # plot_hr_hyades_plx(bv[hyades_mask_plx], lum[hyades_mask_plx])
 print("Hyades By RA, DEC && Parallax - # Data Points: {}".format(np.sum(np.logical_and(hyades_mask_plx, hyades_mask))))
+print("Hyades By RA, DEC && Parallax Accuracy: {}".format(np.sum(np.logical_and(np.logical_and(hyades_mask_plx, hyades_mask), hyadesVector))/np.sum(hyadesVector)))
 # plot_hr_hyades_plx_AND_ra_dec(bv[np.logical_and(hyades_mask_plx, hyades_mask)], lum[np.logical_and(hyades_mask_plx, hyades_mask)])
-
 
 distClusters = dist_kmeans(ra, dec)
 # print(distClusters)
 # plot_2Dclusters(distClusters, ra, dec)
-plot3D(dec, dist, ra, distClusters)
+# plot3D(dec, dist, ra, distClusters)
