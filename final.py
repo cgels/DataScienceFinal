@@ -3,11 +3,12 @@ import sklearn
 from sklearn.cluster import KMeans
 import matplotlib
 import matplotlib.pyplot as plt
+import matplotlib.colors as plt_clr
 from mpl_toolkits.mplot3d import Axes3D
+import itertools
 import seaborn
 seaborn.set()
 from numpy import genfromtxt
-
 
 
 def get_data(filename):
@@ -33,7 +34,6 @@ def get_hyades():
     return hyadesCluster
 
 
-
 def hyades_vector():
     hyadesCluster = []
     for x in range(data.shape[0]):
@@ -46,8 +46,7 @@ def hyades_vector():
 
 
 def get_bv():
-    # bv = [data[x][8] for x in range(0, data.shape[0])]
-    # bv = np.array(bv)
+    ## get color index vector
     return data[:,8]
 
 
@@ -57,31 +56,50 @@ def get_temp(color_index):
 
 
 def get_id():
+    ## get hipparcos star id
     return np.array(data[:,0], dtype='int_')
 
+
+
 def get_VMag():
+    # get visual magnitude vector
     return np.array(data[:,1])
 
+
 def get_ra():
+    ## get right ascension vector (celestial coordinates)
     return np.asarray(data[:,2])
 
+
 def get_dec():
+    ## get declination (celestial coordinates)
     return np.asarray(data[:,3])
 
+
 def get_parallax():
-    ## returns data for parallax - converting milliarcseconds to arcesonds
+    ## get parallax vector in arc seconds
     return np.asarray(data[:,4]) / 1000
 
+
 def get_pmRA():
+    ## get proper motion right ascension vector
     return np.asarray(data[:,6])
 
+
 def get_pmDec():
+    ## get proper motion declination vector
     return np.asarray(data[:,7])
 
-#L=(15 - Vmag - 5logPlx)/2.5
+
+def get_galactic_latitude():
+    alpha = get_ra()
+    delta = get_dec()
+    
+
+
+# L=(15 - Vmag - 5logPlx)/2.5
 # Calculate the luminosity here
 # NOTE: Solar Luminosity is equivalent to Absolute Magnitude.
-
 def get_lum():
     Vmag = get_VMag()
 
@@ -117,9 +135,8 @@ def get_Hyades_mean_parallax(plx, epsilon=20):
 
 
 def get_Hyades_proper_motion():
-    propMot = get_pmRA() + get_pmDec()
+    propMot = proper_motion_kmeans()
     return propMot
-
 
 
 ## returns distance in parsec based on parallx angle
@@ -131,7 +148,6 @@ def get_dist(parallax):
 
 
 def plot_hr(bv, lum):
-
     clusters = spectral_knn(bv)
     B = clusters == 0
     A = clusters == 1
@@ -158,13 +174,11 @@ def plot_hr(bv, lum):
     plt.show()
 
 
-
 def plot_hr_hyades(bv, lum):
     plt.scatter(bv, lum, s=15, c='blue', marker='*', alpha=.7)
     plt.ylabel("Solar Luminosity (L☉)")
     plt.xlabel("Color Index: B-V (mag)")
     plt.show()
-
 
 
 def plot_hr_hyades_plx(bv, lum):
@@ -174,7 +188,6 @@ def plot_hr_hyades_plx(bv, lum):
     plt.show()
 
 
-
 def plot_hr_hyades_plx_AND_ra_dec(bv, lum):
     plt.scatter(bv, lum, s=15, c='blue', marker='*', alpha=.7)
     plt.ylabel("Solar Luminosity (L☉)")
@@ -182,13 +195,11 @@ def plot_hr_hyades_plx_AND_ra_dec(bv, lum):
     plt.show()
 
 
-
 def plot_dist(ra, dec):
     plt.scatter(ra, dec, s=15, c='green', marker='*', alpha=0.7)
     plt.ylabel("Declination")
     plt.xlabel("Right ascension")
     plt.show()
-
 
 
 def spectral_knn(bv):
@@ -210,9 +221,8 @@ def spectral_knn(bv):
             mask.append(-1)
 
     mask = np.array(mask)
-
+    assert mask.shape[0] == bv.shape[0]
     return mask
-
 
 
 def lum_kmeans(bv, lum):
@@ -224,7 +234,7 @@ def lum_kmeans(bv, lum):
     plot = np.array(plot)
 
     # literally just took from notebook example, will mess around w params of KMeans later?
-    clustering = KMeans(n_clusters=4, init='k-means++', n_init=5)
+    clustering = KMeans(n_clusters=4, init='k-means++', n_init=10)
     clustering.fit(plot)
     clusters = clustering.predict(plot)
 
@@ -233,52 +243,71 @@ def lum_kmeans(bv, lum):
     return clusters
 
 
+def proper_motion_kmeans():
+    plot = []
+    pm_ra = get_pmRA()
+    pm_dec = get_pmDec()
+    ra = get_ra()
+    dec = get_dec()
+
+    for s in range(data.shape[0]):
+        plot.append(np.array([pm_ra[s], pm_dec[s], ra[s], dec[s]]))
+
+    clustering = KMeans(n_clusters=2, init='k-means++', n_init=10)
+    clustering.fit(plot)
+    clusters = clustering.predict(plot)
+
+    plot_2Dclusters(clusters, get_bv(), get_lum(), "Clustering by k-Means of Proper Motion")
+
+    return clusters
 
 
 def dist_kmeans(ra, dec):
     # list of stars'[ra, dec] values
     plot = []
-
     for s in range(data.shape[0]):
         plot.append(np.array([ra[s], dec[s]]))
 
     plot = np.array(plot)
 
     # literally just took from notebook example, will mess around w params of KMeans later?
-    clustering = KMeans(n_clusters=3, init='k-means++', n_init=5)
+    clustering = KMeans(n_clusters=3, init='k-means++', n_init=10)
     clustering.fit(plot)
     clusters = clustering.predict(plot)
 
     return clusters
 
 
+def get_plot_masks(clusters):
+    masks = { c : None for c in np.unique(clusters) }
+    clr_lst = itertools.cycle(tuple(plt_clr.cnames.keys()))
+    marker = itertools.cycle(('*', 's', '^', 'o', 'D'))
+
+    for c in masks:
+        masks[c] = clusters == c
+    return masks, marker, clr_lst
 
 def plot_2Dclusters(clusters, x, y, title):
-    cluster0 = clusters == 0
-    cluster1 = clusters == 1
-    cluster2 = clusters == 2
+    masks, marker, clr_lst = get_plot_masks(clusters)
 
-    plt.scatter(x[cluster0], y[cluster0], marker='*', c='lightblue')
-    plt.scatter(x[cluster1], y[cluster1], marker='*', c='blue')
-    plt.scatter(x[cluster2], y[cluster2], marker='*', c='magenta')
+    for c in masks:
+        plt.scatter(x[masks[c]], y[masks[c]], marker=marker.__next__(), c=clr_lst.__next__())
+
     plt.title(title)
-    plt.xlabel("Right Ascension")
-    plt.ylabel("Declination")
+    plt.ylabel("Solar Luminosity (L☉)")
+    plt.xlabel("Color Index: B-V (mag)")
     plt.show()
 
 
-
 def plot3D(x, y, z, clusters):
+    masks, markerMap, clrMap = get_plot_masks(clusters)
+
     fig = plt.figure()
     ax = plt.axes(projection='3d')
 
-    cluster0 = clusters == 0
-    cluster1 = clusters == 1
-    cluster2 = clusters == 2
+    for c in masks:
+        ax.scatter(x[masks[c]], y[masks[c]], z[masks[c]], marker=markerMap.__next__(), c=clrMap.__next__(), alpha=.7)
 
-    ax.scatter(x[cluster0], y[cluster0], z[cluster0], marker='D', c='lightblue', alpha=0.5)
-    ax.scatter(x[cluster1], y[cluster1], z[cluster1], marker='o', c='green', alpha=0.7)
-    ax.scatter(x[cluster2], y[cluster2], z[cluster2], marker='^', c='magenta', alpha=0.7)
     ax.set_ylabel("Distance")
     ax.set_xlabel("Declination")
     ax.set_zlabel("Right Ascension")
@@ -286,12 +315,12 @@ def plot3D(x, y, z, clusters):
 
 
 ##########################################################################################
-#Call functions here
+# Call functions here
 
 data = get_data('HIPPARCOS.csv')
 # print (data.shape)
-assert (data[0] == np.array([2,9.27,0.003797,-19.498837,21.9,181.21,-0.93,3.1,0.999])).sum() == 9
-assert (data[-1] == np.array([118311,11.85,359.954685,-38.252603,24.63,337.76,-112.81,2.96,1.391])).sum() == 9
+assert (data[0] == np.array([2, 9.27, 0.003797, -19.498837, 21.9, 181.21, -0.93, 3.1, 0.999])).sum() == 9
+assert (data[-1] == np.array([118311, 11.85, 359.954685, -38.252603, 24.63, 337.76, -112.81, 2.96, 1.391])).sum() == 9
 
 hyades = get_hyades()
 hyadesVector = hyades_vector() == 1
@@ -300,19 +329,12 @@ bv = get_bv()
 # print (bv)
 
 id = get_id()
-# print (id)
-
+bv = get_bv()
 lum = get_lum()
-# print (lum)
-
 ra = get_ra()
-
 dec = get_dec()
-
 temp = get_temp(bv)
-
 parallax = get_parallax()
-
 dist = get_dist(parallax)
 
 hyades_pm = get_Hyades_proper_motion()
@@ -337,7 +359,9 @@ print("Hyades By RA, DEC && Parallax Accuracy: {}".format(np.sum(np.logical_and(
 # plot_hr_hyades_plx_AND_ra_dec(bv[np.logical_and(hyades_mask_plx, hyades_mask)], lum[np.logical_and(hyades_mask_plx, hyades_mask)])
 plot_2Dclusters(np.logical_and(hyades_mask_plx, hyades_mask), bv, lum, "Hyades Clustered by RA, DEC, and Parallax")
 
+# propMotClusters = proper_motion_kmeans()
+
 distClusters = dist_kmeans(ra, dec)
 # print(distClusters)
 # plot_2Dclusters(distClusters, ra, dec)
-# plot3D(dec, dist, ra, distClusters)
+plot3D(dec, dist, ra, distClusters)
