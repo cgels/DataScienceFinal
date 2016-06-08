@@ -27,7 +27,7 @@ def get_diff_mean_Hyades_RA(ra, dec, epsilon=20):
 def get_Hyades_mean_parallax(plx, epsilon=20):
     # mean_plx = 22.0
     mean_plx = 46.34
-    mean_dif_sqr = np.absolute((plx * 1000) - mean_plx)
+    mean_dif_sqr = (plx * 1000) - mean_plx
     return mean_dif_sqr <= epsilon
 
 
