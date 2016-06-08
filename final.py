@@ -5,6 +5,7 @@ from sklearn.cluster import SpectralClustering
 from sklearn.cluster import DBSCAN
 import data
 import visuals
+import hyades_analysis
 import seaborn
 seaborn.set()
 
@@ -12,8 +13,6 @@ seaborn.set()
 ## returns boolean mask for selecting features in data within an epsilon of the mean RA, Dec for the Hyades cluster
 def get_diff_mean_Hyades_RA(ra, dec, epsilon=20):
     ## Hyades cluster is centered around a right ascension of 67 degrees
-    # print(ra)
-    # print(dec)
     ra_diff = ra - 67
     dec_diff = dec - 16
 
@@ -25,8 +24,7 @@ def get_diff_mean_Hyades_RA(ra, dec, epsilon=20):
 
 
 def get_Hyades_mean_parallax(plx, epsilon=20):
-    # mean_plx = 22.0
-    mean_plx = 46.34
+    mean_plx = 22.0
     mean_dif_sqr = (plx * 1000) - mean_plx
     return mean_dif_sqr <= epsilon
 
@@ -66,8 +64,7 @@ def lum_kmeans(bv, lum):
 
 def proper_motion_kmeans():
     plot = []
-    pm_ra = data.get_pmRA(dataset)
-    pm_dec = data.get_pmDec(dataset)
+
 
     ra = data.get_ra(dataset)
     dec = data.get_dec(dataset)
@@ -117,9 +114,9 @@ def dist_dbscan(x, y, z):
     db = db.labels_
     return db
 
+
 def galactic_dist_kmeans():
-    l = data.get_galactic_latitude(dataset)
-    b = data.get_galactic_longitude(dataset)
+
     plot = []
     for s in range(dataset.shape[0]):
         plot.append(np.array([l[s], b[s]]))
@@ -152,11 +149,15 @@ bv = data.get_bv(dataset)
 lum = data.get_lum(dataset)
 ra = data.get_ra(dataset)
 dec = data.get_dec(dataset)
+pm_ra = data.get_pmRA(dataset)
+pm_dec = data.get_pmDec(dataset)
 temp = data.get_temp(bv)
 parallax = data.get_parallax(dataset)
 dist = get_dist(parallax)
+l = data.get_galactic_latitude(dataset)
+b = data.get_galactic_longitude(dataset)
 
-hyades_pm = get_Hyades_proper_motion()
+# hyades_pm = get_Hyades_proper_motion()
 
 hyades_mask = get_diff_mean_Hyades_RA(ra, dec, 1)
 
@@ -164,46 +165,56 @@ hyades_mask_plx = get_Hyades_mean_parallax(parallax, .01)
 #
 # plot_dist(ra, dec)
 # plot_hr(bv, lum)
-visuals.plot_2Dclusters(hyadesVector, bv, lum, "Ground Truth Hyades")
-print("Hyades By RA, DEC - # Data Points: {}".format(np.sum(hyades_mask)))
-print("Hyades By RA, DEC Accuracy: {}".format(np.sum(np.logical_and(hyades_mask, hyadesVector)) / np.sum(hyadesVector)))
-# plot_hr_hyades(bv[hyades_mask], lum[hyades_mask])
-visuals.plot_2Dclusters(hyades_mask, bv, lum, "Hyades Clustered by RA and DEC")
-print("Hyades By Parallax - # Data Points: {} ".format(np.sum(hyades_mask_plx)))
-print("Hyades By Parallax Accuracy: {}".format(
-    np.sum(np.logical_and(hyades_mask_plx, hyadesVector)) / np.sum(hyadesVector)))
-# plot_hr_hyades_plx(bv[hyades_mask_plx], lum[hyades_mask_plx])
-visuals.plot_2Dclusters(hyades_mask_plx, bv, lum, "Hyades Clustered by Parallax")
-print("Hyades By RA, DEC && Parallax - # Data Points: {}".format(np.sum(np.logical_and(hyades_mask_plx, hyades_mask))))
-print("Hyades By RA, DEC && Parallax Accuracy: {}".format(
-    np.sum(np.logical_and(np.logical_and(hyades_mask_plx, hyades_mask), hyadesVector)) / np.sum(hyadesVector)))
-# plot_hr_hyades_plx_AND_ra_dec(bv[np.logical_and(hyades_mask_plx, hyades_mask)], lum[np.logical_and(hyades_mask_plx, hyades_mask)])
-visuals.plot_2Dclusters(np.logical_and(hyades_mask_plx, hyades_mask), bv, lum, "Hyades Clustered by RA, DEC, and Parallax")
+# visuals.plot_2Dclusters(hyadesVector, bv, lum, "Ground Truth Hyades")
+# print("Hyades By RA, DEC - # Data Points: {}".format(np.sum(hyades_mask)))
+# print("Hyades By RA, DEC Accuracy: {}".format(np.sum(np.logical_and(hyades_mask, hyadesVector)) / np.sum(hyadesVector)))
+# # plot_hr_hyades(bv[hyades_mask], lum[hyades_mask])
+# visuals.plot_2Dclusters(hyades_mask, bv, lum, "Hyades Clustered by RA and DEC")
+# print("Hyades By Parallax - # Data Points: {} ".format(np.sum(hyades_mask_plx)))
+# print("Hyades By Parallax Accuracy: {}".format(
+#     np.sum(np.logical_and(hyades_mask_plx, hyadesVector)) / np.sum(hyadesVector)))
+# # plot_hr_hyades_plx(bv[hyades_mask_plx], lum[hyades_mask_plx])
+# visuals.plot_2Dclusters(hyades_mask_plx, bv, lum, "Hyades Clustered by Parallax")
+# print("Hyades By RA, DEC && Parallax - # Data Points: {}".format(np.sum(np.logical_and(hyades_mask_plx, hyades_mask))))
+# print("Hyades By RA, DEC && Parallax Accuracy: {}".format(
+#     np.sum(np.logical_and(np.logical_and(hyades_mask_plx, hyades_mask), hyadesVector)) / np.sum(hyadesVector)))
+# # plot_hr_hyades_plx_AND_ra_dec(bv[np.logical_and(hyades_mask_plx, hyades_mask)], lum[np.logical_and(hyades_mask_plx, hyades_mask)])
+# visuals.plot_2Dclusters(np.logical_and(hyades_mask_plx, hyades_mask), bv, lum, "Hyades Clustered by RA, DEC, and Parallax")
 
 # propMotClusters = proper_motion_kmeans()
 
-distClusters = dist_kmeans(ra, dec)
+# distClusters = dist_kmeans(ra, dec)
+#
+# spectral_mask = dist_spectral(ra, dec)
+# # spectral_mask_plx = dist_spectral_plx(parallax, .01)
+# print("Hyades By RA, DEC Spectral - # Data Points: {}".format(np.sum(spectral_mask)))
+# print("Hyades By Spectral Accuracy: {}".format(np.sum(np.logical_and(spectral_mask, hyadesVector))/np.sum(hyadesVector)))
+# visuals.plot_2Dclusters(spectral_mask, bv, lum, "Hyades Clustered by RA, DEC, and Parallax - Spectral")
+# accuracy = visuals.plot_with_hyades(hyadesVector, spectral_mask, bv, lum, "Hyades Clustered by RA, DEC, and Parallax - Spectral")
+# print(accuracy)
+# db_mask = dist_dbscan(ra, dec, parallax)
+# print("Hyades By RA, DEC Parallax - # Data Points: {}".format(np.sum(db_mask)))
+# print("Hyades By DBSCAN Accuracy: {}".format(np.sum(np.logical_and(db_mask, hyadesVector))/np.sum(hyadesVector)))
+# # visuals.plot_2Dclusters(db_mask, bv, lum, "Hyades Clustered by RA, DEC, and Parallax - DBSCAN")
+# # acc = visuals.plot_with_hyades(hyadesVector, db_mask, bv, lum, "Hyades Clustered by RA, DEC, and Parallax - DBSCAN")
+# # visuals.plot3D(dec, parallax, ra, db_mask)
+# # print(distClusters)
+# # plot_2Dclusters(distClusters, ra, dec)
+# # plot3D(dec, dist, ra, distClusters)
+#
+# print("GALACTIC")
+# galDistClusters = galactic_dist_kmeans()
+# visuals.plot_2Dclusters(galDistClusters, bv, lum, "Clustering with Galactic Coordinate")
+# # print(distClusters)
+# # plot_2Dclusters(distClusters, ra, dec)
+# visuals.plot3D(dec, dist, ra, distClusters)
 
-spectral_mask = dist_spectral(ra, dec)
-# spectral_mask_plx = dist_spectral_plx(parallax, .01)
-print("Hyades By RA, DEC Spectral - # Data Points: {}".format(np.sum(spectral_mask)))
-print("Hyades By Spectral Accuracy: {}".format(np.sum(np.logical_and(spectral_mask, hyadesVector))/np.sum(hyadesVector)))
-visuals.plot_2Dclusters(spectral_mask, bv, lum, "Hyades Clustered by RA, DEC, and Parallax - Spectral")
-visuals.plot_with_hyades(hyadesVector, spectral_mask, bv, lum, "Hyades Clustered by RA, DEC, and Parallax - Spectral")
 
-db_mask = dist_dbscan(ra, dec, parallax)
-print("Hyades By RA, DEC Parallax - # Data Points: {}".format(np.sum(db_mask)))
-print("Hyades By DBSCAN Accuracy: {}".format(np.sum(np.logical_and(db_mask, hyadesVector))/np.sum(hyadesVector)))
-# visuals.plot_2Dclusters(db_mask, bv, lum, "Hyades Clustered by RA, DEC, and Parallax - DBSCAN")
-# acc = visuals.plot_with_hyades(hyadesVector, db_mask, bv, lum, "Hyades Clustered by RA, DEC, and Parallax - DBSCAN")
-# visuals.plot3D(dec, parallax, ra, db_mask)
-# print(distClusters)
-# plot_2Dclusters(distClusters, ra, dec)
-# plot3D(dec, dist, ra, distClusters)
+print("KMEANS Plotted results for clustering for each criterion for k 1 - 15.")
+vecs = [ra, dec, pm_ra, pm_dec, parallax, dist, l, b]
+hyades_study = hyades_analysis.find_optimal_kmeans(15, vecs, hyadesVector)
 
-print("GALACTIC")
-galDistClusters = galactic_dist_kmeans()
-visuals.plot_2Dclusters(galDistClusters, bv, lum, "Clustering with Galactic Coordinate")
-# print(distClusters)
-# plot_2Dclusters(distClusters, ra, dec)
-visuals.plot3D(dec, dist, ra, distClusters)
+for s in range(len(hyades_study)):
+    clusters = hyades_study[s][1]
+    print("Best Accuracy for Study {} for k = {} is {}".format(s, hyades_study[s][2], hyades_study[s][0]))
+    visuals.plot_with_hyades(hyadesVector, clusters, bv, lum, "NEED TO CREATE TITLE MAPPINGS")

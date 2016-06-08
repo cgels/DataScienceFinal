@@ -107,6 +107,7 @@ def plot_2Dclusters(clusters, x, y, title):
     plt.xlabel("Color Index: B-V (mag)")
     plt.show()
 
+
 def plot_with_hyades(hv, clusters, x, y, title):
     masks, marker, clr_lst = get_plot_masks(clusters)
 
@@ -128,6 +129,7 @@ def plot_with_hyades(hv, clusters, x, y, title):
 
     acc_arr = np.array(acc_arr)
     return acc_arr
+
 
 def plot3D(x, y, z, clusters):
     masks, markerMap, clrMap = get_plot_masks(clusters)
