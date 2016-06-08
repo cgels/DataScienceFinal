@@ -1,6 +1,8 @@
 import numpy as np
 import sklearn
 from sklearn.cluster import KMeans
+from sklearn.cluster import SpectralClustering
+from sklearn.cluster import DBSCAN
 import data
 import visuals
 import seaborn
@@ -96,6 +98,24 @@ def dist_kmeans(ra, dec):
     clusters = clustering.predict(plot)
     return clusters
 
+def dist_spectral(x, y):
+
+    plot = []
+    for s in range(dataset.shape[0]):
+        plot.append(np.array([x[s], y[s]]))
+    plot = np.array(plot)
+    spectral = SpectralClustering(n_clusters=3, eigen_solver='arpack', affinity="nearest_neighbors")
+    clusters = spectral.fit_predict(plot)
+    return clusters
+
+def dist_dbscan(x, y, z):
+    plot = []
+    for s in range(dataset.shape[0]):
+        plot.append(np.array([x[s], y[s]], z[s]))
+    plot = np.array(plot)
+    db = DBSCAN(eps=.5, min_samples=3, metric='euclidean').fit(plot)
+    db = db.labels_
+    return db
 
 def galactic_dist_kmeans():
     l = data.get_galactic_latitude(dataset)
@@ -163,6 +183,22 @@ visuals.plot_2Dclusters(np.logical_and(hyades_mask_plx, hyades_mask), bv, lum, "
 # propMotClusters = proper_motion_kmeans()
 
 distClusters = dist_kmeans(ra, dec)
+
+spectral_mask = dist_spectral(ra, dec)
+# spectral_mask_plx = dist_spectral_plx(parallax, .01)
+print("Hyades By RA, DEC Spectral - # Data Points: {}".format(np.sum(spectral_mask)))
+print("Hyades By Spectral Accuracy: {}".format(np.sum(np.logical_and(spectral_mask, hyadesVector))/np.sum(hyadesVector)))
+visuals.plot_2Dclusters(spectral_mask, bv, lum, "Hyades Clustered by RA, DEC, and Parallax - Spectral")
+
+db_mask = dist_dbscan(ra, dec, parallax)
+print("Hyades By RA, DEC Parallax - # Data Points: {}".format(np.sum(db_mask)))
+print("Hyades By DBSCAN Accuracy: {}".format(np.sum(np.logical_and(db_mask, hyadesVector))/np.sum(hyadesVector)))
+visuals.plot_2Dclusters(db_mask, bv, lum, "Hyades Clustered by RA, DEC, and Parallax - DBSCAN")
+visuals.plot3D(dec, parallax, ra, db_mask)
+# print(distClusters)
+# plot_2Dclusters(distClusters, ra, dec)
+# plot3D(dec, dist, ra, distClusters)
+
 print("GALACTIC")
 galDistClusters = galactic_dist_kmeans()
 visuals.plot_2Dclusters(galDistClusters, bv, lum, "Clustering with Galactic Coordinate")
