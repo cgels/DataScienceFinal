@@ -4,8 +4,10 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as plt_clr
 import itertools
 import seaborn
+
 seaborn.set()
 from mpl_toolkits.mplot3d import Axes3D
+
 
 def plot_hr(bv, lum):
     clusters = spectral_knn(bv)
@@ -114,10 +116,10 @@ def plot_with_hyades(hv, clusters, x, y, title):
     i = 0
     acc_arr = []
     for c in masks:
-        acc = np.sum(np.logical_and(masks[c], hv))/np.sum(hv)
-        print (np.sum(np.logical_and(masks[c], hv)))
-        print (np.sum(hv))
-        print (i, "  ", acc)
+        acc = float(np.sum(np.logical_and(masks[c], hv))) / np.sum(hv)
+        print(np.sum(np.logical_and(masks[c], hv)))
+        print(np.sum(hv))
+        print(i, "  ", acc)
         acc_arr.append(acc)
         plt.scatter(x[hv], y[hv], marker=marker.__next__(), c=clr_lst.__next__())
         plt.scatter(x[masks[c]], y[masks[c]], marker=marker.__next__(), c=clr_lst.__next__())
@@ -126,6 +128,27 @@ def plot_with_hyades(hv, clusters, x, y, title):
         plt.xlabel("Color Index: B-V (mag)")
         plt.show()
         i += 1
+
+    acc_arr = np.array(acc_arr)
+    return acc_arr
+
+
+def plot_best_clust_with_hyades(hv, clusters, x, y, title, best_cluster_label):
+    masks, marker, clr_lst = get_plot_masks(clusters)
+
+    acc_arr = []
+    hits = float(np.sum(np.logical_and(masks[best_cluster_label], hv)))
+    acc = hits / np.sum(hv)
+    acc_arr.append(acc)
+
+    plt.scatter(x[hv], y[hv], marker=marker.__next__(), c=clr_lst.__next__())
+    plt.scatter(x[masks[best_cluster_label]], y[masks[best_cluster_label]], marker=marker.__next__(),
+                c=clr_lst.__next__())
+
+    plt.title(title)
+    plt.ylabel("Solar Luminosity (L☉) for Cluster {}".format(best_cluster_label))
+    plt.xlabel("Color Index: B-V (mag) for Cluster {}".format(best_cluster_label))
+    plt.show()
 
     acc_arr = np.array(acc_arr)
     return acc_arr
