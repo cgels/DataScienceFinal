@@ -140,7 +140,7 @@ def galactic_dist_kmeans():
 # Call functions here
 
 dataset = data.get_data("HIPPARCOS.csv")
-print(dataset.shape)
+print (dataset.shape)
 assert (dataset[0] == np.array([2, 9.27, 0.003797, -19.498837, 21.9, 181.21, -0.93, 3.1, 0.999])).sum() == 9
 assert (dataset[-1] == np.array([118311, 11.85, 359.954685, -38.252603, 24.63, 337.76, -112.81, 2.96, 1.391])).sum() == 9
 
@@ -189,12 +189,14 @@ spectral_mask = dist_spectral(ra, dec)
 print("Hyades By RA, DEC Spectral - # Data Points: {}".format(np.sum(spectral_mask)))
 print("Hyades By Spectral Accuracy: {}".format(np.sum(np.logical_and(spectral_mask, hyadesVector))/np.sum(hyadesVector)))
 visuals.plot_2Dclusters(spectral_mask, bv, lum, "Hyades Clustered by RA, DEC, and Parallax - Spectral")
+visuals.plot_with_hyades(hyadesVector, spectral_mask, bv, lum, "Hyades Clustered by RA, DEC, and Parallax - Spectral")
 
 db_mask = dist_dbscan(ra, dec, parallax)
 print("Hyades By RA, DEC Parallax - # Data Points: {}".format(np.sum(db_mask)))
 print("Hyades By DBSCAN Accuracy: {}".format(np.sum(np.logical_and(db_mask, hyadesVector))/np.sum(hyadesVector)))
-visuals.plot_2Dclusters(db_mask, bv, lum, "Hyades Clustered by RA, DEC, and Parallax - DBSCAN")
-visuals.plot3D(dec, parallax, ra, db_mask)
+# visuals.plot_2Dclusters(db_mask, bv, lum, "Hyades Clustered by RA, DEC, and Parallax - DBSCAN")
+# acc = visuals.plot_with_hyades(hyadesVector, db_mask, bv, lum, "Hyades Clustered by RA, DEC, and Parallax - DBSCAN")
+# visuals.plot3D(dec, parallax, ra, db_mask)
 # print(distClusters)
 # plot_2Dclusters(distClusters, ra, dec)
 # plot3D(dec, dist, ra, distClusters)

@@ -92,6 +92,7 @@ def get_plot_masks(clusters):
 
     for c in masks:
         masks[c] = clusters == c
+
     return masks, marker, clr_lst
 
 
@@ -106,6 +107,27 @@ def plot_2Dclusters(clusters, x, y, title):
     plt.xlabel("Color Index: B-V (mag)")
     plt.show()
 
+def plot_with_hyades(hv, clusters, x, y, title):
+    masks, marker, clr_lst = get_plot_masks(clusters)
+
+    i = 0
+    acc_arr = []
+    for c in masks:
+        acc = np.sum(np.logical_and(masks[c], hv))/np.sum(hv)
+        print (np.sum(np.logical_and(masks[c], hv)))
+        print (np.sum(hv))
+        print (i, "  ", acc)
+        acc_arr.append(acc)
+        plt.scatter(x[hv], y[hv], marker=marker.__next__(), c=clr_lst.__next__())
+        plt.scatter(x[masks[c]], y[masks[c]], marker=marker.__next__(), c=clr_lst.__next__())
+        plt.title(title)
+        plt.ylabel("Solar Luminosity (L☉)")
+        plt.xlabel("Color Index: B-V (mag)")
+        plt.show()
+        i += 1
+
+    acc_arr = np.array(acc_arr)
+    return acc_arr
 
 def plot3D(x, y, z, clusters):
     masks, markerMap, clrMap = get_plot_masks(clusters)
