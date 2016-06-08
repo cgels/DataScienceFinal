@@ -217,4 +217,5 @@ hyades_study = hyades_analysis.find_optimal_kmeans(15, vecs, hyadesVector)
 for s in range(len(hyades_study)):
     clusters = hyades_study[s][1]
     print("Best Accuracy for Study {} for k = {} is {}".format(s, hyades_study[s][2], hyades_study[s][0]))
-    visuals.plot_with_hyades(hyadesVector, clusters, bv, lum, "NEED TO CREATE TITLE MAPPINGS")
+    ## pass a list of clusters that we want to examine -- best cluster per study is available at
+    visuals.plot_best_clust_with_hyades(hyadesVector, clusters, bv, lum, "NEED TO CREATE TITLE MAPPINGS", hyades_study[s][3])
