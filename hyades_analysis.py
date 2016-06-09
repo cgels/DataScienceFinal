@@ -44,7 +44,7 @@ def kmeans(vectors: list, num_rows, k):
     return clustering.predict(matrix)
 
 
-def dbscan(vectors:list, num_rows, epsilon):
+def dbscan(vectors: list, num_rows, epsilon):
     matrix = []
     ## num_rows X len(vectors)
     for s in range(num_rows):
@@ -60,7 +60,7 @@ def dbscan(vectors:list, num_rows, epsilon):
     return db
 
 
-def spectral_clustering(vectors:list, num_rows, k):
+def spectral_clustering(vectors: list, num_rows, k):
     matrix = []
     ## num_rows X len(vectors)
     for s in range(num_rows):
@@ -79,7 +79,7 @@ def spectral_clustering(vectors:list, num_rows, k):
 # vectors = [ ra, dec, pm_ra, pm_dec, parallax, distance, gal_long, gal_lat ]
 def find_optimal_kmeans(max_k, vectors, true_hyades_vec):
     ## table with max_k rows and 9 columns (1 per criterion)
-    kmeans_acc = {i : [None] * max_k for i in range(9)}
+    kmeans_acc = {i: [None] * max_k for i in range(9)}
     num_rows = vectors[0].shape[0]
     ## for each k in range(0, max_k + 1)
     for k in range(1, max_k + 1):
@@ -136,7 +136,7 @@ def find_optimal_kmeans(max_k, vectors, true_hyades_vec):
     optimal = [None] * 9
     for criterion in kmeans_acc:
         ## ignore k = 1
-        best = sorted(kmeans_acc[criterion],key=itemgetter(0))[1]
+        best = sorted(kmeans_acc[criterion], key=itemgetter(0))[1]
         print(best)
         optimal[int(criterion)] = best
     return optimal
