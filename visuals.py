@@ -144,7 +144,7 @@ def plot_best_clust_with_hyades(hv, clusters, x, y, title, best_cluster_label, b
     plt.scatter(x[hv], y[hv], marker="*", c='blue', s=45, alpha=.7)
     hits = np.logical_and(masks[best_cluster_label], hv)
     plt.scatter(x[hits], y[hits], marker="s", c='lightgreen', s=25)
-    plt.scatter(x[np.logical_not(hits)], y[np.logical_not(hits)], marker="x", s=25, alpha=.5, c ='red')
+    plt.scatter(x[np.logical_not(hits)], y[np.logical_not(hits)], marker="x", s=25, alpha=.35, c ='red')
 
     plt.title(title.format(best_accuracy * 100))
     plt.ylabel("Solar Luminosity (L☉) for Cluster {}".format(best_cluster_label))

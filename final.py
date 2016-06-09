@@ -244,14 +244,3 @@ for s in range(len(hyades_study)):
 
 #
 # print()
-# print("SPECTRAL Plotted results for clustering for k = 1 - 15")
-# hyades_study = hyades_analysis.find_optimal_spectral_clusters(15, vecs, hyadesVector)
-#
-# for s in range(len(hyades_study)):
-#     clusters = hyades_study[s][1]
-#     if clusters != None:
-#         print("Best Accuracy for Study {} for k = {} is {}".format(s, hyades_study[s][2], hyades_study[s][0]))
-#         ## pass a list of clusters that we want to examine -- best cluster per study is available at
-#         visuals.plot_best_clust_with_hyades(hyadesVector, clusters, bv, lum, , titles[s], hyades_study[s][3])
-#     else:
-#         print("Study {} ommitted.".format(s))
