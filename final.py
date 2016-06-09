@@ -210,9 +210,9 @@ hyades_mask_plx = get_Hyades_mean_parallax(parallax, .01)
 # visuals.plot3D(dec, dist, ra, distClusters)
 
 
-print("KMEANS Plotted results for clustering for each criterion for k 1 - 15.")
+
 vecs = [ra, dec, pm_ra, pm_dec, parallax, dist, l, b]
-hyades_study = hyades_analysis.find_optimal_kmeans(15, vecs, hyadesVector)
+
 titles = []
 titles.append("Right Ascension, Declination [deg, deg]")
 titles.append("Parallax [milli-arcseconds (mas)]")
@@ -226,6 +226,7 @@ titles.append("Distance, Proper Motions in Right Ascension, Declination [pc, mas
 
 suffix = "\n {:.1f}% of Hyades Cluster correctly identified"
 
+print("KMEANS Plotted results for clustering for each criterion for k 1 - 15.")
 # hyades_study = hyades_analysis.find_optimal_kmeans(15, vecs, hyadesVector)
 # kmeans_prefix = "kMeans Clustering on "
 # for s in range(len(hyades_study)):
@@ -239,27 +240,27 @@ suffix = "\n {:.1f}% of Hyades Cluster correctly identified"
 
 
 
-print("DBSCAN Plotted results for clustering for each criterion for 15 Epsilons = [.01 - 2.5]")
-hyades_study = hyades_analysis.find_optimal_dbscan(10, vecs, hyadesVector)
-dbscan_prefix = "DBSCAN Clustering on "
-for s in range(len(hyades_study)):
-    clusters = hyades_study[s][1]
-    print("Best Accuracy for Study {} for epsilon = {:.3f} is {}".format(s, hyades_study[s][2], hyades_study[s][0]))
-    ## pass a list of clusters that we want to examine -- best cluster per study is available at
-    visuals.plot_best_clust_with_hyades(hyadesVector, clusters, bv, lum, dbscan_prefix + titles[s] + suffix, hyades_study[s][3], hyades_study[s][0])
-print()
-
-
-
-
-# print("SPECTRAL Plotted results for clustering for k = 1 - 15")
-# hyades_study = hyades_analysis.find_optimal_spectral_clusters(15, vecs, hyadesVector)
-# spectral_prefix = "Spectral Clustering on "
+# print("DBSCAN Plotted results for clustering for each criterion for 15 Epsilons = [.01 - 2.5]")
+# hyades_study = hyades_analysis.find_optimal_dbscan(10, vecs, hyadesVector)
+# dbscan_prefix = "DBSCAN Clustering on "
 # for s in range(len(hyades_study)):
 #     clusters = hyades_study[s][1]
-#     if clusters != None:
-#         print("Best Accuracy for Study {} for k = {} is {}".format(s, hyades_study[s][2], hyades_study[s][0]))
-#         ## pass a list of clusters that we want to examine -- best cluster per study is available at
-#         visuals.plot_best_clust_with_hyades(hyadesVector, clusters, bv, lum, spectral_prefix + titles[s] + suffix, hyades_study[s][3], hyades_study[s][0])
-#     else:
-#         print("Study {} ommitted.".format(s))
+#     print("Best Accuracy for Study {} for epsilon = {:.3f} is {}".format(s, hyades_study[s][2], hyades_study[s][0]))
+#     ## pass a list of clusters that we want to examine -- best cluster per study is available at
+#     visuals.plot_best_clust_with_hyades(hyadesVector, clusters, bv, lum, dbscan_prefix + titles[s] + suffix, hyades_study[s][3], hyades_study[s][0])
+# print()
+
+
+
+
+print("SPECTRAL Plotted results for clustering for k = 1 - 15")
+hyades_study = hyades_analysis.find_optimal_spectral_clusters(15, vecs, hyadesVector)
+spectral_prefix = "Spectral Clustering on "
+for s in range(len(hyades_study)):
+    clusters = hyades_study[s][1]
+    if clusters != None:
+        print("Best Accuracy for Study {} for k = {} is {}".format(s, hyades_study[s][2], hyades_study[s][0]))
+        ## pass a list of clusters that we want to examine -- best cluster per study is available at
+        visuals.plot_best_clust_with_hyades(hyadesVector, clusters, bv, lum, spectral_prefix + titles[s] + suffix, hyades_study[s][3], hyades_study[s][0])
+    else:
+        print("Study {} ommitted.".format(s))
