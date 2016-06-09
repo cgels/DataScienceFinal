@@ -250,9 +250,6 @@ for s in range(len(hyades_study)):
     if clusters != None:
         print("Best Accuracy for Study {} for k = {} is {}".format(s, hyades_study[s][2], hyades_study[s][0]))
         ## pass a list of clusters that we want to examine -- best cluster per study is available at
-        visuals.plot_best_clust_with_hyades(hyadesVector, clusters, bv, lum, "NEED TO CREATE TITLE MAPPINGS", hyades_study[s][3])
+        visuals.plot_best_clust_with_hyades(hyadesVector, clusters, bv, lum, titles[s], hyades_study[s][3])
     else:
         print("Study {] ommitted.".format(s))
-    print("Best Accuracy for Study {} for k = {} is {}".format(s, hyades_study[s][2], hyades_study[s][0]))
-    ## pass a list of clusters that we want to examine -- best cluster per study is available at
-    visuals.plot_best_clust_with_hyades(hyadesVector, clusters, bv, lum, titles[s], hyades_study[s][3])
