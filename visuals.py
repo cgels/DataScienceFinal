@@ -133,7 +133,7 @@ def plot_with_hyades(hv, clusters, x, y, title):
     return acc_arr
 
 
-def plot_best_clust_with_hyades(hv, clusters, x, y, title, best_cluster_label):
+def plot_best_clust_with_hyades(hv, clusters, x, y, title, best_cluster_label, best_accuracy):
     masks, marker, clr_lst = get_plot_masks(clusters)
 
     acc_arr = []
@@ -141,12 +141,12 @@ def plot_best_clust_with_hyades(hv, clusters, x, y, title, best_cluster_label):
     acc = hits / np.sum(hv)
     acc_arr.append(acc)
 
-    plt.scatter(x[hv], y[hv], marker="*", c='lightblue', s=30, alpha=.5)
+    plt.scatter(x[hv], y[hv], marker="*", c='blue', s=45, alpha=.7)
     hits = np.logical_and(masks[best_cluster_label], hv)
     plt.scatter(x[hits], y[hits], marker="s", c='lightgreen', s=25)
     plt.scatter(x[np.logical_not(hits)], y[np.logical_not(hits)], marker="x", s=25, alpha=.5, c ='red')
 
-    plt.title(title)
+    plt.title(title.format(best_accuracy * 100))
     plt.ylabel("Solar Luminosity (L☉) for Cluster {}".format(best_cluster_label))
     plt.xlabel("Color Index: B-V (mag) for Cluster {}".format(best_cluster_label))
     plt.show()
