@@ -44,7 +44,6 @@ def kmeans(vectors: list, num_rows, k):
 def find_optimal_kmeans(max_k, vectors, true_hyades_vec):
     ## table with max_k rows and 9 columns (1 per criterion)
     kmeans_acc = {i : [None] * max_k for i in range(9)}
-
     num_rows = vectors[0].shape[0]
     ## for each k in range(0, max_k + 1)
     for k in range(1, max_k + 1):
@@ -105,3 +104,11 @@ def find_optimal_kmeans(max_k, vectors, true_hyades_vec):
         print(best)
         optimal[int(criterion)] = best
     return optimal
+
+
+def find_optimal_dbscan(max_k, vectors, true_hyades_vec):
+    raise NotImplementedError
+
+
+def find_optimal_spectral_clusters(max_k, vectors, true_hyades_vec):
+    raise NotImplementedError
